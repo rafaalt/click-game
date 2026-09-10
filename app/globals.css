@@ -40,6 +40,7 @@
   --game-red-shadow: rgb(223 23 43 / 24%);
   --track: #e8e8e8;
   --hairline: rgb(17 17 17 / 10%);
+  --arena-glow: rgb(223 23 43 / 8%);
 }
 
 @theme inline {
@@ -108,6 +109,7 @@
     --game-red-shadow: rgb(237 35 55 / 25%);
     --track: #282828;
     --hairline: rgb(255 255 255 / 12%);
+    --arena-glow: rgb(237 35 55 / 11%);
   }
 }
 
@@ -140,34 +142,36 @@ select {
   position: relative;
   display: grid;
   min-height: 100svh;
-  grid-template-rows: auto 1fr auto;
+  min-height: 100dvh;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   overflow: hidden;
-  padding: max(1.25rem, env(safe-area-inset-top))
-    max(1.25rem, env(safe-area-inset-right))
-    max(1.25rem, env(safe-area-inset-bottom))
-    max(1.25rem, env(safe-area-inset-left));
+  padding: max(clamp(1rem, 3vh, 1.75rem), env(safe-area-inset-top))
+    max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-right))
+    max(clamp(1rem, 3vh, 1.75rem), env(safe-area-inset-bottom))
+    max(clamp(1rem, 4vw, 2rem), env(safe-area-inset-left));
+  background:
+    radial-gradient(circle at 50% 72%, var(--arena-glow), transparent 28rem),
+    var(--background);
   isolation: isolate;
 }
 
 .game-shell::before {
   position: absolute;
   z-index: -1;
-  top: 50%;
-  left: 50%;
-  width: min(54rem, 95vw);
-  aspect-ratio: 1;
+  inset: clamp(5.25rem, 11vh, 7rem) clamp(1rem, 7vw, 6rem);
   border: 1px solid var(--hairline);
-  border-radius: 50%;
+  border-radius: clamp(2.5rem, 10vw, 8rem);
   content: "";
-  opacity: 0.7;
-  transform: translate(-50%, -50%);
+  opacity: 0.75;
+  pointer-events: none;
 }
 
 .game-header,
 .game-footer {
+  position: relative;
   display: flex;
   width: 100%;
-  max-width: 72rem;
+  max-width: 76rem;
   margin-inline: auto;
   align-items: center;
   justify-content: space-between;
@@ -175,24 +179,36 @@ select {
 
 .brand {
   margin: 0;
-  font-size: 0.75rem;
+  font-size: 0.8rem;
   font-weight: 800;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
+}
+
+.brand::before {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-right: 0.75rem;
+  border-radius: 50%;
+  background: var(--game-red);
+  box-shadow: 0 0 1rem var(--game-red-shadow);
+  content: "";
 }
 
 .record {
   display: inline-flex;
-  min-height: 2.5rem;
+  min-height: 2.65rem;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.65rem 0.9rem;
+  padding: 0.7rem 1rem;
   border: 1px solid var(--hairline);
   border-radius: 999px;
-  background: color-mix(in srgb, var(--card) 82%, transparent);
+  background: color-mix(in srgb, var(--card) 76%, transparent);
   color: var(--muted-foreground);
   font-size: 0.875rem;
-  backdrop-filter: blur(12px);
+  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 5%);
+  backdrop-filter: blur(16px);
 }
 
 .record strong {
@@ -204,9 +220,10 @@ select {
   display: grid;
   width: 100%;
   max-width: 30rem;
+  min-height: 0;
   margin: auto;
   place-items: center;
-  padding-block: clamp(2rem, 8vh, 5rem);
+  padding-block: clamp(1rem, 3.5vh, 2.5rem);
 }
 
 .play-view,
@@ -220,9 +237,9 @@ select {
 
 .score-label,
 .result-kicker {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.5rem;
   color: var(--muted-foreground);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -230,7 +247,7 @@ select {
 
 .score {
   margin: 0;
-  font-size: clamp(5.5rem, 20vw, 9rem);
+  font-size: clamp(4.75rem, min(18vw, 15vh), 8rem);
   font-weight: 800;
   letter-spacing: -0.075em;
   line-height: 0.9;
@@ -243,7 +260,7 @@ select {
 
 .odds {
   display: flex;
-  margin-top: 1.5rem;
+  margin-top: clamp(1rem, 2.5vh, 1.4rem);
   align-items: baseline;
   gap: 0.55rem;
   color: var(--muted-foreground);
@@ -258,18 +275,20 @@ select {
 
 .risk-meter {
   width: min(15rem, 66vw);
-  height: 0.3rem;
+  height: 0.38rem;
   margin-top: 0.8rem;
   overflow: hidden;
   border-radius: 999px;
   background: var(--track);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 12%);
 }
 
 .risk-meter-fill {
   width: var(--risk);
   height: 100%;
   border-radius: inherit;
-  background: var(--game-red);
+  background: linear-gradient(90deg, var(--game-red-hover), var(--game-red));
+  box-shadow: 0 0 1rem var(--game-red-shadow);
   transition: width 180ms ease-out;
 }
 
@@ -280,14 +299,18 @@ select {
 }
 
 .click-button {
-  width: clamp(10.5rem, 43vw, 13.5rem) !important;
+  position: relative;
+  width: clamp(9.5rem, min(40vw, 24vh), 12.5rem) !important;
   height: auto !important;
   aspect-ratio: 1;
-  margin-top: clamp(2.2rem, 7vh, 4.5rem);
+  margin-top: clamp(1.75rem, 4.5vh, 3.25rem);
   border: 0;
   border-radius: 50% !important;
   background: var(--game-red) !important;
-  box-shadow: 0 0.8rem 0 var(--game-red-hover), 0 1.6rem 4rem var(--game-red-shadow);
+  box-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 18%),
+    0 0.65rem 0 var(--game-red-hover),
+    0 1.35rem 3.25rem var(--game-red-shadow);
   color: #ffffff !important;
   cursor: pointer;
   font-size: 1rem !important;
@@ -305,8 +328,11 @@ select {
 }
 
 .click-button:active {
-  box-shadow: 0 0.3rem 0 var(--game-red-hover), 0 0.9rem 2rem var(--game-red-shadow);
-  transform: translateY(0.5rem) scale(0.985);
+  box-shadow:
+    inset 0 2px 0 rgb(255 255 255 / 12%),
+    0 0.2rem 0 var(--game-red-hover),
+    0 0.75rem 1.75rem var(--game-red-shadow);
+  transform: translateY(0.45rem) scale(0.985);
 }
 
 .click-button:focus-visible,
@@ -316,12 +342,14 @@ select {
 }
 
 .result-view {
-  padding: clamp(2rem, 7vw, 3rem);
+  max-width: 27rem;
+  margin-bottom: clamp(2.5rem, 9vh, 5.5rem);
+  padding: clamp(1.75rem, 6vw, 2.75rem);
   border: 1px solid var(--hairline);
-  border-radius: 1.75rem;
-  background: color-mix(in srgb, var(--card) 90%, transparent);
-  box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 8%);
-  backdrop-filter: blur(18px);
+  border-radius: 2rem;
+  background: color-mix(in srgb, var(--card) 84%, transparent);
+  box-shadow: 0 1.5rem 5rem rgb(0 0 0 / 10%);
+  backdrop-filter: blur(22px);
   animation: result-in 280ms ease-out both;
 }
 
@@ -331,13 +359,13 @@ select {
 
 .result-title {
   margin: 0;
-  font-size: clamp(2.25rem, 10vw, 4rem);
+  font-size: clamp(2.25rem, 9vw, 3.75rem);
   letter-spacing: -0.055em;
   line-height: 1;
 }
 
 .final-score {
-  margin: 2rem 0 0;
+  margin: 1.75rem 0 0;
   color: var(--muted-foreground);
   font-size: 0.95rem;
 }
@@ -346,7 +374,7 @@ select {
   display: block;
   margin-top: 0.2rem;
   color: var(--foreground);
-  font-size: clamp(4rem, 18vw, 7rem);
+  font-size: clamp(3.75rem, 16vw, 6.5rem);
   font-weight: 800;
   letter-spacing: -0.07em;
   line-height: 1;
@@ -364,13 +392,25 @@ select {
 
 .retry-button {
   min-height: 3.25rem !important;
-  margin-top: 2rem;
+  margin-top: 1.5rem;
   padding-inline: 1.6rem !important;
   border-radius: 999px !important;
   background: var(--foreground) !important;
   color: var(--background) !important;
   font-size: 0.95rem !important;
   font-weight: 750 !important;
+  box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 10%);
+  transition: transform 140ms ease, box-shadow 140ms ease !important;
+}
+
+.retry-button:hover {
+  box-shadow: 0 0.9rem 2.25rem rgb(0 0 0 / 14%);
+  transform: translateY(-2px);
+}
+
+.retry-button:active {
+  box-shadow: 0 0.35rem 1rem rgb(0 0 0 / 10%);
+  transform: translateY(1px);
 }
 
 .game-footer {
@@ -380,7 +420,7 @@ select {
 .game-footer p {
   margin: 0;
   color: var(--muted-foreground);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
   text-align: center;
 }
 
@@ -416,12 +456,49 @@ select {
 
 @media (max-height: 700px) {
   .game-stage {
-    padding-block: 1.25rem;
+    padding-block: 0.75rem;
+  }
+
+  .score {
+    font-size: clamp(4rem, 14vh, 5.5rem);
   }
 
   .click-button {
-    width: clamp(8.75rem, 32vh, 11rem) !important;
-    margin-top: 2rem;
+    width: clamp(8rem, 24vh, 9.5rem) !important;
+    margin-top: 1.5rem;
+  }
+
+  .result-view {
+    margin-bottom: 2rem;
+    padding-block: 1.5rem;
+  }
+
+  .final-score {
+    margin-top: 1.25rem;
+  }
+
+  .final-score strong {
+    font-size: clamp(3.25rem, 14vh, 4.75rem);
+  }
+}
+
+@media (max-width: 480px) {
+  .game-shell::before {
+    inset-inline: 0.75rem;
+    border-radius: 2.25rem;
+  }
+
+  .brand {
+    font-size: 0.74rem;
+    letter-spacing: 0.16em;
+  }
+
+  .brand::before {
+    margin-right: 0.55rem;
+  }
+
+  .result-view {
+    border-radius: 1.5rem;
   }
 }
 

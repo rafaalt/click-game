@@ -257,14 +257,14 @@ export function ClickGame() {
           <div className="result-view" role="alert" aria-live="assertive">
             <p className="result-kicker">Fim da rodada</p>
             <h1 className="result-title">Você falhou</h1>
+            <Button type="button" className="retry-button" onClick={restartGame} autoFocus>
+              Tentar novamente
+            </Button>
             <p className="final-score">
               Pontuação final
               <strong>{score}</strong>
             </p>
             {isNewRecord ? <p className="new-record">Novo recorde!</p> : null}
-            <Button type="button" className="retry-button" onClick={restartGame} autoFocus>
-              Tentar novamente
-            </Button>
           </div>
         )}
       </section>
